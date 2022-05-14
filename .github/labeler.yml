@@ -1,0 +1,11 @@
+source:
+  - src/**/*
+  - dist/**/*
+action:
+  - action.yml
+tests:
+  - tests/**/*
+automation:
+  - .github/workflows/*
+docs:
+  - '*.md'

@@ -1,11 +1,22 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'todolist'
+description: 'Create and Archive Github Issues from TODO list'
+author: 'acti0nit'
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  token:
+    description: 'Github Authentication Token'
+    required: false
+    default: ${{ github.token }}
+  repository:
+    description: 'Target Github Repository'
+    required: false
+    default: ${{ github.repository }}
+  content-filepath:
+    description: 'file path to todo list'
+    required: false
+    default: 'TODO.txt'
+outputs:
+  issue-numbers:
+    description: 'number reference of created issues'
 runs:
   using: 'node16'
   main: 'dist/index.js'
