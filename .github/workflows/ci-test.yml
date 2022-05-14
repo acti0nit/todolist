@@ -10,11 +10,14 @@ on:
 
 jobs:
   tests:
-  runs-on: ubuntu-latest
-  - uses: ./.github/workflows/checks/test.yml
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./.github/workflows/checks/test.yml
   dist:
-  runs-on: ubuntu-latest
-  - uses: ./.github/workflows/checks/dist.yml
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./.github/workflows/checks/dist.yml
   codeql:
-  runs-on: ubuntu-latest
-  - uses: ./.github/workflows/checks/codeql.yml
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./.github/workflows/checks/codeql.yml
