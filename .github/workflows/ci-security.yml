@@ -1,0 +1,12 @@
+##
+# Run unit test and the action itself
+##
+name: CI Security
+on:
+  pull_request_target:
+    branches:
+      - main
+
+jobs:
+  codeql:
+    uses: acti0nit/todolist/.github/workflows/codeql.yml@main
