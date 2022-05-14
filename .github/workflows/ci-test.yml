@@ -12,12 +12,12 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: ./.github/workflows/checks/test.yml
+    - uses: acti0nit/todolist/.github/workflows/checks/test.yml@master
   dist:
     runs-on: ubuntu-latest
     steps:
-    - uses: ./.github/workflows/checks/dist.yml
+    - uses: acti0nit/todolist/.github/workflows/checks/dist.yml@master
   codeql:
     runs-on: ubuntu-latest
     steps:
-    - uses: ./.github/workflows/checks/codeql.yml
+    - uses: acti0nit/todolist/.github/workflows/checks/codeql.yml@master
