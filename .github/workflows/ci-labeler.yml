@@ -8,6 +8,8 @@ on:
 jobs:
   triage:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
     # See documentation: https://github.com/actions/labeler
     - uses: actions/labeler@v3
