@@ -1,0 +1,17 @@
+##
+# Run unit test and the action itself
+##
+name: Tests
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  tests:
+  - uses: acti0nit/todolist/.github/workflows/checks/test.yml@master
+  dist:
+  - uses: acti0nit/todolist/.github/workflows/checks/dist.yml@master
+  codeql:
+  - uses: acti0nit/todolist/.github/workflows/checks/codeql.yml@master
