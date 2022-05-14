@@ -10,8 +10,11 @@ on:
 
 jobs:
   tests:
-  - uses: acti0nit/todolist/.github/workflows/checks/test.yml@master
+  runs-on: ubuntu-latest
+  - uses: ./.github/workflows/checks/test.yml
   dist:
-  - uses: acti0nit/todolist/.github/workflows/checks/dist.yml@master
+  runs-on: ubuntu-latest
+  - uses: ./.github/workflows/checks/dist.yml
   codeql:
-  - uses: acti0nit/todolist/.github/workflows/checks/codeql.yml@master
+  runs-on: ubuntu-latest
+  - uses: ./.github/workflows/checks/codeql.yml
