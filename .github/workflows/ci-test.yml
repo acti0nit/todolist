@@ -1,20 +1,18 @@
 ##
 # Run unit test and the action itself
 ##
-name: Tests
+name: CI Tests
 on:
-  pull_request_target:
+  pull_request:
+  push:
     branches:
       - main
 
 jobs:
   tests:
     uses: acti0nit/todolist/.github/workflows/test.yml@main
+    secrets:
+      token: ${{ secrets.PAT }}
   dist:
     uses: acti0nit/todolist/.github/workflows/dist.yml@main
-  codeql:
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    uses: acti0nit/todolist/.github/workflows/codeql.yml@main
+    
