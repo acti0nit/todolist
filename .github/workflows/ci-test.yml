@@ -10,14 +10,12 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: acti0nit/todolist/.github/workflows/checks/test.yml@master
+    uses: acti0nit/todolist/.github/workflows/test.yml@main
   dist:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: acti0nit/todolist/.github/workflows/checks/dist.yml@master
+    uses: acti0nit/todolist/.github/workflows/dist.yml@main
   codeql:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: acti0nit/todolist/.github/workflows/checks/codeql.yml@master
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: acti0nit/todolist/.github/workflows/codeql.yml@main
