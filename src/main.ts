@@ -65,6 +65,7 @@ async function run(): Promise<void> {
       }
       todolist.concat(getChanges(file[1].patch || ''))
     }
+    core.debug(`todolist: ${todolist}`)
 
     // create issues for relevant changes
     for (const change of todolist) {
