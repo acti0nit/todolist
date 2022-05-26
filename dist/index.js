@@ -134,7 +134,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getShas = exports.getContent = void 0;
+exports.getChanges = exports.getShas = exports.getContent = void 0;
 const github_1 = __nccwpck_require__(5438);
 const core = __importStar(__nccwpck_require__(2186));
 function getContent(content) {
@@ -161,6 +161,17 @@ function getShas() {
     return { base, head };
 }
 exports.getShas = getShas;
+function getChanges(patch) {
+    var _a;
+    const newChange = /(?:^|\s)\+(.*?)$/g;
+    const matches = ((_a = newChange.exec(patch)) === null || _a === void 0 ? void 0 : _a.entries()) || [];
+    let [label, title] = '';
+    for (const match of matches) {
+        [label, title] = match[1].split(':');
+    }
+    return { label, title };
+}
+exports.getChanges = getChanges;
 
 
 /***/ }),

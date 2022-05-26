@@ -27,3 +27,14 @@ export function getShas(): {base: string; head: string} {
 
   return {base, head}
 }
+
+export function getChanges(patch: string): {label: string; title: string} {
+  const newChange = /(?:^|\s)\+(.*?)$/g
+  const matches = newChange.exec(patch)?.entries() || []
+  let [label, title] = ''
+  for (const match of matches) {
+    ;[label, title] = match[1].split(':')
+  }
+
+  return {label, title}
+}
