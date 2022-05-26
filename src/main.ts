@@ -10,7 +10,7 @@ async function run(): Promise<void> {
       token: core.getInput('token'),
       repository: core.getInput('repository'),
       contentFilepath: core.getInput('content-filepath'),
-      dryRun: core.getInput('dry-run'),
+      dryRun: core.getInput('dry-run')
     }
     core.debug(`Inputs: ${inspect(inputs)}`)
 
@@ -47,7 +47,9 @@ async function run(): Promise<void> {
           // }
           // create issue
           if (inputs.dryRun) {
-            core.info(`Creating issue:\n  - owner:\t${owner}\n  - repo:\t${repo}\n  - title:\t${title}`)
+            core.info(
+              `Creating issue:\n  - owner:\t${owner}\n  - repo:\t${repo}\n  - title:\t${title}`
+            )
             return 42
           }
 
