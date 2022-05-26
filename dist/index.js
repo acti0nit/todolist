@@ -41,8 +41,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const fs = __importStar(__nccwpck_require__(7147));
-const util = __importStar(__nccwpck_require__(3837));
 const util_1 = __nccwpck_require__(3837);
 const util_2 = __nccwpck_require__(4024);
 function run() {
@@ -56,76 +54,21 @@ function run() {
             };
             core.debug(`Inputs: ${(0, util_1.inspect)(inputs)}`);
             const [owner, repo] = inputs.repository.split('/');
-            core.debug(`Repo: ${(0, util_1.inspect)(repo)}`);
+            core.debug(`owner: ${(0, util_1.inspect)(owner)}`);
+            core.debug(`repo: ${(0, util_1.inspect)(repo)}`);
             if (inputs.token.length === 0 && inputs.dryRun) {
                 core.info('empty token');
                 return;
             }
-            const octokit = github.getOctokit(inputs.token);
-            const issues = [];
-            // check file exists
-            if (yield util.promisify(fs.exists)(inputs.contentFilepath)) {
-                // fetch file
-                const fileContent = yield fs.promises.readFile(inputs.contentFilepath, {
-                    encoding: 'utf8'
-                });
-                for (const issueRaw of (0, util_2.getContent)(fileContent)) {
-                    // get title and label
-                    const [label, title] = issueRaw.split(/:/);
-                    const issueNumber = yield (() => __awaiter(this, void 0, void 0, function* () {
-                        // TODO:feat:update existing issue
-                        // if (inputs.issueNumber) {
-                        //   await octokit.rest.issues.update({
-                        //     owner: owner,
-                        //     repo: repo,
-                        //     issue_number: inputs.issueNumber,
-                        //     title: inputs.title,
-                        //     body: fileContent
-                        //   })
-                        //   core.info(`Updated issue #${inputs.issueNumber}`)
-                        //   return inputs.issueNumber
-                        // }
-                        // create issue
-                        if (inputs.dryRun) {
-                            core.info(`Creating issue:\n  - owner:\t${owner}\n  - repo:\t${repo}\n  - title:\t${title}`);
-                            return 42;
-                        }
-                        const { data: issue } = yield octokit.rest.issues.create({
-                            owner,
-                            repo,
-                            title,
-                            body: ':rocket:'
-                        });
-                        core.info(`Created issue #${issue.number}`);
-                        return issue.number;
-                    }))();
-                    core.info(`Applying label '${label}'`);
-                    if (!inputs.dryRun) {
-                        yield octokit.rest.issues.addLabels({
-                            owner,
-                            repo,
-                            issue_number: issueNumber,
-                            labels: [label]
-                        });
-                    }
-                    issues.push(issueNumber);
-                }
-                // TODO: apply assignees
-                // if (inputs.assignees.length > 0) {
-                //   core.info(`Applying assignees '${inputs.assignees}'`)
-                //   await octokit.rest.issues.addAssignees({
-                //     owner: owner,
-                //     repo: repo,
-                //     issue_number: issueNumber,
-                //     assignees: inputs.assignees
-                //   })
-                // }
-                // set output
-                core.setOutput('issues', issues.join(','));
-            }
-            else {
-                new Error(`File not found at path '${inputs.contentFilepath}'`);
-            }
+            // const octokit = github.getOctokit(inputs.token)
+            // get sha for changes
+            const { base, head } = (0, util_2.getShas)(github.context.eventName);
+            core.debug(`base: ${base}`);
+            core.debug(`head: ${head}`);
+            // get changes
+            // check if new lines added to relevant file
+            // create issues for relevant changes
+            // label issues
         }
         catch (error) {
             if (error instanceof Error) {
@@ -141,16 +84,61 @@ run();
 /***/ }),
 
 /***/ 4024:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getContent = void 0;
+exports.getShas = exports.getContent = void 0;
+const github_1 = __nccwpck_require__(5438);
+const core = __importStar(__nccwpck_require__(2186));
 function getContent(content) {
     return content.trim().split('\n');
 }
 exports.getContent = getContent;
+function getShas(event) {
+    var _a, _b, _c, _d;
+    let base = '';
+    let head = '';
+    switch (event) {
+        case 'pull_request':
+            base = (_b = (_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.base) === null || _b === void 0 ? void 0 : _b.sha;
+            head = (_d = (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.head) === null || _d === void 0 ? void 0 : _d.sha;
+            break;
+        case 'push':
+            base = github_1.context.payload.before;
+            head = github_1.context.payload.after;
+            break;
+        default:
+            core.setFailed(`This action only supports pull requests and pushes, ${github_1.context.eventName} events are not supported. ` +
+                "Please submit an issue on this action's GitHub repo if you believe this in correct.");
+    }
+    return { base, head };
+}
+exports.getShas = getShas;
 
 
 /***/ }),
