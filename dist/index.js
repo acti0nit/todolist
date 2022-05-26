@@ -94,6 +94,7 @@ function run() {
                 }
                 todolist.concat((0, util_2.getChanges)(file[1].patch || ''));
             }
+            core.debug(`todolist: ${todolist}`);
             // create issues for relevant changes
             for (const change of todolist) {
                 if (inputs.dryRun) {
