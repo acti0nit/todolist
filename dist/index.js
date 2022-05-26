@@ -88,11 +88,13 @@ function run() {
             core.debug(`files: ${files}`);
             const todolist = [];
             for (const file of files) {
-                core.debug(`file: ${JSON.stringify(file, null, 2)}`);
-                if (file[1].filename !== inputs.contentFilepath) {
+                const f = file[1];
+                core.debug(`file: ${JSON.stringify(f, null, 2)}`);
+                if (f.filename !== inputs.contentFilepath) {
+                    core.debug(`wrong filename: ${f.filename}`);
                     continue;
                 }
-                const changes = (0, util_2.getChanges)(file[1].patch || '');
+                const changes = (0, util_2.getChanges)(f.patch || '');
                 core.debug(`changes: ${changes}`);
                 todolist.concat(changes);
             }
