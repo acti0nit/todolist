@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {inspect} from 'util'
 
-import {getShas} from './util'
+import {getChanges, getShas, Todo} from './util'
 
 async function run(): Promise<void> {
   try {
@@ -57,11 +57,23 @@ async function run(): Promise<void> {
     const files = response.data.files?.entries() || []
 
     core.debug(`files: ${files}`)
+    const todolist: Todo[] = []
     for (const file of files) {
       core.debug(`file: ${JSON.stringify(file, null, 2)}`)
+      if (file[1].filename !== inputs.contentFilepath) {
+        continue
+      }
+      todolist.concat(getChanges(file[1].patch || ''))
     }
 
     // create issues for relevant changes
+    for (const change of todolist) {
+      if (inputs.dryRun) {
+        core.debug(`creating issue:`)
+        core.debug(`label: ${change.label}`)
+        core.debug(`title: ${change.title}`)
+      }
+    }
     // label issues
   } catch (error: Error | unknown) {
     if (error instanceof Error) {

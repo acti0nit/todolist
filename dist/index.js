@@ -86,10 +86,22 @@ function run() {
             // check if new lines added to relevant file
             const files = ((_a = response.data.files) === null || _a === void 0 ? void 0 : _a.entries()) || [];
             core.debug(`files: ${files}`);
+            const todolist = [];
             for (const file of files) {
                 core.debug(`file: ${JSON.stringify(file, null, 2)}`);
+                if (file[1].filename !== inputs.contentFilepath) {
+                    continue;
+                }
+                todolist.concat((0, util_2.getChanges)(file[1].patch || ''));
             }
             // create issues for relevant changes
+            for (const change of todolist) {
+                if (inputs.dryRun) {
+                    core.debug(`creating issue:`);
+                    core.debug(`label: ${change.label}`);
+                    core.debug(`title: ${change.title}`);
+                }
+            }
             // label issues
         }
         catch (error) {
@@ -162,14 +174,16 @@ function getShas() {
 }
 exports.getShas = getShas;
 function getChanges(patch) {
-    var _a;
-    const newChange = /(?:^|\s)\+(.*?)$/g;
-    const matches = ((_a = newChange.exec(patch)) === null || _a === void 0 ? void 0 : _a.entries()) || [];
-    let [label, title] = '';
-    for (const match of matches) {
-        [label, title] = match[1].split(':');
+    const changes = [];
+    for (const line of patch.split('\n')) {
+        if (!line.startsWith('+')) {
+            continue;
+        }
+        const [label, title] = line.substring(1).split(':');
+        const change = { label, title };
+        changes.push(change);
     }
-    return { label, title };
+    return changes;
 }
 exports.getChanges = getChanges;
 

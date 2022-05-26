@@ -28,13 +28,21 @@ export function getShas(): {base: string; head: string} {
   return {base, head}
 }
 
-export function getChanges(patch: string): {label: string; title: string} {
-  const newChange = /(?:^|\s)\+(.*?)$/g
-  const matches = newChange.exec(patch)?.entries() || []
-  let [label, title] = ''
-  for (const match of matches) {
-    ;[label, title] = match[1].split(':')
+export interface Todo {
+  label: string
+  title: string
+}
+
+export function getChanges(patch: string): Todo[] {
+  const changes = []
+  for (const line of patch.split('\n')) {
+    if (!line.startsWith('+')) {
+      continue
+    }
+    const [label, title] = line.substring(1).split(':')
+    const change = {label, title} as Todo
+    changes.push(change)
   }
 
-  return {label, title}
+  return changes
 }
