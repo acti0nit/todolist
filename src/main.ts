@@ -19,6 +19,11 @@ async function run(): Promise<void> {
     const [owner, repo] = inputs.repository.split('/')
     core.debug(`Repo: ${inspect(repo)}`)
 
+    if (inputs.token.length === 0 && inputs.dryRun) {
+      core.info('empty token')
+      return
+    }
+
     const octokit = github.getOctokit(inputs.token)
     const issues: number[] = []
 
