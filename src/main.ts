@@ -63,7 +63,9 @@ async function run(): Promise<void> {
       if (file[1].filename !== inputs.contentFilepath) {
         continue
       }
-      todolist.concat(getChanges(file[1].patch || ''))
+      const changes = getChanges(file[1].patch || '')
+      core.debug(`changes: ${changes}`)
+      todolist.concat(changes)
     }
     core.debug(`todolist: ${todolist}`)
 
