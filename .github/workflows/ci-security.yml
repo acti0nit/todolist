@@ -10,3 +10,7 @@ on:
 jobs:
   codeql:
     uses: acti0nit/todolist/.github/workflows/codeql.yml@main
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
