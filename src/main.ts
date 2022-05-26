@@ -57,7 +57,7 @@ async function run(): Promise<void> {
     const files = response.data.files?.entries() || []
 
     core.debug(`files: ${files}`)
-    for (let file of files) {
+    for (const file of files) {
       core.debug(`file: ${JSON.stringify(file, null, 2)}`)
     }
 

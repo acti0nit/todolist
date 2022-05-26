@@ -44,6 +44,7 @@ const github = __importStar(__nccwpck_require__(5438));
 const util_1 = __nccwpck_require__(3837);
 const util_2 = __nccwpck_require__(4024);
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const inputs = {
@@ -83,10 +84,10 @@ function run() {
                     "Please submit an issue on this action's GitHub repo.");
             }
             // check if new lines added to relevant file
-            const files = response.data.files;
+            const files = ((_a = response.data.files) === null || _a === void 0 ? void 0 : _a.entries()) || [];
             core.debug(`files: ${files}`);
-            for (const file in files) {
-                core.debug(`file: ${file}`);
+            for (const file of files) {
+                core.debug(`file: ${JSON.stringify(file, null, 2)}`);
             }
             // create issues for relevant changes
             // label issues
