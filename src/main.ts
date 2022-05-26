@@ -55,8 +55,9 @@ async function run(): Promise<void> {
 
     // check if new lines added to relevant file
     const files = response.data.files
+    core.debug(`files: ${files}`)
     for (const file in files) {
-      core.debug(`file: ${JSON.stringify(file, null)}`)
+      core.debug(`file: ${file}`)
     }
 
     // create issues for relevant changes
