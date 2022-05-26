@@ -44,6 +44,7 @@ const github = __importStar(__nccwpck_require__(5438));
 const fs = __importStar(__nccwpck_require__(7147));
 const util = __importStar(__nccwpck_require__(3837));
 const util_1 = __nccwpck_require__(3837);
+const util_2 = __nccwpck_require__(4024);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -64,7 +65,7 @@ function run() {
                 const fileContent = yield fs.promises.readFile(inputs.contentFilepath, {
                     encoding: 'utf8'
                 });
-                for (const issueRaw of fileContent.split(/\n/)) {
+                for (const issueRaw of (0, util_2.getContent)(fileContent)) {
                     // get title and label
                     const [label, title] = issueRaw.split(/:/);
                     const issueNumber = yield (() => __awaiter(this, void 0, void 0, function* () {
@@ -131,6 +132,21 @@ function run() {
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 4024:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getContent = void 0;
+function getContent(content) {
+    return content.trim().split('\n');
+}
+exports.getContent = getContent;
 
 
 /***/ }),
