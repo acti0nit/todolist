@@ -4,6 +4,8 @@ import * as fs from 'fs'
 import * as util from 'util'
 import {inspect} from 'util'
 
+import {getContent} from './util'
+
 async function run(): Promise<void> {
   try {
     const inputs = {
@@ -27,7 +29,7 @@ async function run(): Promise<void> {
         encoding: 'utf8'
       })
 
-      for (const issueRaw of fileContent.split(/\n/)) {
+      for (const issueRaw of getContent(fileContent)) {
         // get title and label
         const [label, title] = issueRaw.split(/:/)
 
