@@ -9,7 +9,8 @@ async function run(): Promise<void> {
     const inputs = {
       token: core.getInput('token'),
       repository: core.getInput('repository'),
-      contentFilepath: core.getInput('content-filepath')
+      contentFilepath: core.getInput('content-filepath'),
+      dryRun: core.getInput('dry-run'),
     }
     core.debug(`Inputs: ${inspect(inputs)}`)
 
@@ -45,6 +46,11 @@ async function run(): Promise<void> {
           //   return inputs.issueNumber
           // }
           // create issue
+          if (inputs.dryRun) {
+            core.info(`Creating issue:\n  - owner:\t${owner}\n  - repo:\t${repo}\n  - title:\t${title}`)
+            return 42
+          }
+
           const {data: issue} = await octokit.rest.issues.create({
             owner,
             repo,
@@ -57,12 +63,14 @@ async function run(): Promise<void> {
         })()
 
         core.info(`Applying label '${label}'`)
-        await octokit.rest.issues.addLabels({
-          owner,
-          repo,
-          issue_number: issueNumber,
-          labels: [label]
-        })
+        if (!inputs.dryRun) {
+          await octokit.rest.issues.addLabels({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            labels: [label]
+          })
+        }
         issues.push(issueNumber)
       }
 

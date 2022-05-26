@@ -13,7 +13,11 @@ inputs:
   content-filepath:
     description: 'file path to todo list'
     required: false
-    default: 'TODO.txt'
+    default: '.github/TODO.md'
+  dry-run:
+    description: 'dry run mode'
+    required: false
+    default: false
 outputs:
   issue-numbers:
     description: 'number reference of created issues'
