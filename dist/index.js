@@ -84,8 +84,9 @@ function run() {
             }
             // check if new lines added to relevant file
             const files = response.data.files;
+            core.debug(`files: ${files}`);
             for (const file in files) {
-                core.debug(`file: ${JSON.stringify(file, null, 2)}`);
+                core.debug(`file: ${file}`);
             }
             // create issues for relevant changes
             // label issues
