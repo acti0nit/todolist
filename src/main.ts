@@ -57,7 +57,7 @@ async function run(): Promise<void> {
     const files = response.data.files?.entries() || []
 
     core.debug(`files: ${files}`)
-    const todolist: Todo[] = []
+    let todolist: Todo[] = []
     for (const file of files) {
       const f = file[1]
       core.debug(`file: ${JSON.stringify(f, null, 2)}`)
@@ -66,10 +66,10 @@ async function run(): Promise<void> {
         continue
       }
       const changes = getChanges(f.patch || '')
-      core.debug(`changes: ${changes}`)
-      todolist.concat(changes)
+      core.debug(`changes: ${JSON.stringify(changes, null, 2)}`)
+      todolist = todolist.concat(changes)
     }
-    core.debug(`todolist: ${todolist}`)
+    core.debug(`todolist: ${JSON.stringify(todolist, null, 2)}`)
 
     // create issues for relevant changes
     for (const change of todolist) {

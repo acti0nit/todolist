@@ -86,7 +86,7 @@ function run() {
             // check if new lines added to relevant file
             const files = ((_a = response.data.files) === null || _a === void 0 ? void 0 : _a.entries()) || [];
             core.debug(`files: ${files}`);
-            const todolist = [];
+            let todolist = [];
             for (const file of files) {
                 const f = file[1];
                 core.debug(`file: ${JSON.stringify(f, null, 2)}`);
@@ -95,10 +95,10 @@ function run() {
                     continue;
                 }
                 const changes = (0, util_2.getChanges)(f.patch || '');
-                core.debug(`changes: ${changes}`);
-                todolist.concat(changes);
+                core.debug(`changes: ${JSON.stringify(changes, null, 2)}`);
+                todolist = todolist.concat(changes);
             }
-            core.debug(`todolist: ${todolist}`);
+            core.debug(`todolist: ${JSON.stringify(todolist, null, 2)}`);
             // create issues for relevant changes
             for (const change of todolist) {
                 if (inputs.dryRun) {
