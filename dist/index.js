@@ -57,6 +57,10 @@ function run() {
             core.debug(`Inputs: ${(0, util_1.inspect)(inputs)}`);
             const [owner, repo] = inputs.repository.split('/');
             core.debug(`Repo: ${(0, util_1.inspect)(repo)}`);
+            if (inputs.token.length === 0 && inputs.dryRun) {
+                core.info('empty token');
+                return;
+            }
             const octokit = github.getOctokit(inputs.token);
             const issues = [];
             // check file exists
