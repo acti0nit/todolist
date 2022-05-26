@@ -60,13 +60,33 @@ function run() {
                 core.info('empty token');
                 return;
             }
-            // const octokit = github.getOctokit(inputs.token)
+            const octokit = github.getOctokit(inputs.token);
             // get sha for changes
-            const { base, head } = (0, util_2.getShas)(github.context.eventName);
+            const { base, head } = (0, util_2.getShas)();
             core.debug(`base: ${base}`);
             core.debug(`head: ${head}`);
             // get changes
+            const response = yield octokit.rest.repos.compareCommits({
+                base,
+                head,
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo
+            });
+            // Ensure that the request was successful.
+            if (response.status !== 200) {
+                core.setFailed(`The GitHub API for comparing the base and head commits for this ${github.context.eventName} event returned ${response.status}, expected 200. ` +
+                    "Please submit an issue on this action's GitHub repo.");
+            }
+            // Ensure that the head commit is ahead of the base commit.
+            if (response.data.status !== 'ahead') {
+                core.setFailed(`The head commit for this ${github.context.eventName} event is not ahead of the base commit. ` +
+                    "Please submit an issue on this action's GitHub repo.");
+            }
             // check if new lines added to relevant file
+            const files = response.data.files;
+            for (const file in files) {
+                core.debug(`file: ${JSON.stringify(file, null, 2)}`);
+            }
             // create issues for relevant changes
             // label issues
         }
@@ -119,11 +139,11 @@ function getContent(content) {
     return content.trim().split('\n');
 }
 exports.getContent = getContent;
-function getShas(event) {
+function getShas() {
     var _a, _b, _c, _d;
     let base = '';
     let head = '';
-    switch (event) {
+    switch (github_1.context.eventName) {
         case 'pull_request':
             base = (_b = (_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.base) === null || _b === void 0 ? void 0 : _b.sha;
             head = (_d = (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.head) === null || _d === void 0 ? void 0 : _d.sha;

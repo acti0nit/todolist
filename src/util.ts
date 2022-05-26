@@ -5,10 +5,11 @@ export function getContent(content: string): string[] {
   return content.trim().split('\n')
 }
 
-export function getShas(event: string): {base: string; head: string} {
+export function getShas(): {base: string; head: string} {
   let base = ''
   let head = ''
-  switch (event) {
+
+  switch (context.eventName) {
     case 'pull_request':
       base = context.payload.pull_request?.base?.sha
       head = context.payload.pull_request?.head?.sha
@@ -23,5 +24,6 @@ export function getShas(event: string): {base: string; head: string} {
           "Please submit an issue on this action's GitHub repo if you believe this in correct."
       )
   }
+
   return {base, head}
 }
