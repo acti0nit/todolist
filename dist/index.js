@@ -92,7 +92,9 @@ function run() {
                 if (file[1].filename !== inputs.contentFilepath) {
                     continue;
                 }
-                todolist.concat((0, util_2.getChanges)(file[1].patch || ''));
+                const changes = (0, util_2.getChanges)(file[1].patch || '');
+                core.debug(`changes: ${changes}`);
+                todolist.concat(changes);
             }
             core.debug(`todolist: ${todolist}`);
             // create issues for relevant changes
