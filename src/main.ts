@@ -84,7 +84,7 @@ async function run(): Promise<void> {
         owner,
         repo,
         title,
-        labels: [label],
+        labels: [label]
       })
     }
     // label issues
