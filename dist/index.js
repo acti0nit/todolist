@@ -101,11 +101,19 @@ function run() {
             core.debug(`todolist: ${JSON.stringify(todolist, null, 2)}`);
             // create issues for relevant changes
             for (const change of todolist) {
+                const { label, title } = change;
                 if (inputs.dryRun) {
                     core.debug(`creating issue:`);
-                    core.debug(`label: ${change.label}`);
-                    core.debug(`title: ${change.title}`);
+                    core.debug(`label: ${label}`);
+                    core.debug(`title: ${title}`);
+                    continue;
                 }
+                octokit.rest.issues.create({
+                    owner,
+                    repo,
+                    title,
+                    labels: [label]
+                });
             }
             // label issues
         }
