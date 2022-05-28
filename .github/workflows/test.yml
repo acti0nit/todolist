@@ -3,6 +3,9 @@
 ##
 name: Tests
 on:
+  push:
+    branches:
+    - dev/local
   workflow_call:
     secrets:
       token:
