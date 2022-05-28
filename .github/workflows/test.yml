@@ -5,34 +5,28 @@ name: Tests
 on:
   push:
     branches:
-    - dev/local
+      - dev/local
   workflow_call:
     secrets:
       token:
+        description: 'token to check github commits'
         required: true
 
 jobs:
-  # lint tests
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - run: npm ci
-    - run: npm run lint
   # unit tests
   unit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - run: npm ci
-    - run: npm test
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - run: npm test
   # test action works running from the graph
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - run: npm ci
-    - uses: ./
-      with:
-        token: ${{ secrets.token }}
-        dry-run: true
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - uses: ./
+        with:
+          token: ${{ secrets.token }}
+          dry-run: true

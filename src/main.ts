@@ -1,10 +1,10 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {inspect} from 'util'
+import { inspect } from 'util'
 
-import {getChanges, getShas, Todo} from './util'
+import { getChanges, getShas, Todo } from './util'
 
-async function run(): Promise<void> {
+async function run (): Promise<void> {
   try {
     const inputs = {
       token: core.getInput('token'),
@@ -26,7 +26,7 @@ async function run(): Promise<void> {
     const octokit = github.getOctokit(inputs.token)
 
     // get sha for changes
-    const {base, head} = getShas()
+    const { base, head } = getShas()
     core.debug(`base: ${base}`)
     core.debug(`head: ${head}`)
     // get changes
@@ -73,9 +73,9 @@ async function run(): Promise<void> {
 
     // create issues for relevant changes
     for (const change of todolist) {
-      const {label, title} = change
+      const { label, title } = change
       if (inputs.dryRun) {
-        core.debug(`creating issue:`)
+        core.debug('creating issue:')
         core.debug(`label: ${label}`)
         core.debug(`title: ${title}`)
         continue

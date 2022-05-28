@@ -1,11 +1,11 @@
-import {context} from '@actions/github'
+import { context } from '@actions/github'
 import * as core from '@actions/core'
 
-export function getContent(content: string): string[] {
+export function getContent (content: string): string[] {
   return content.trim().split('\n')
 }
 
-export function getShas(): {base: string; head: string} {
+export function getShas (): {base: string; head: string} {
   let base = ''
   let head = ''
 
@@ -25,7 +25,7 @@ export function getShas(): {base: string; head: string} {
       )
   }
 
-  return {base, head}
+  return { base, head }
 }
 
 export interface Todo {
@@ -33,14 +33,14 @@ export interface Todo {
   title: string
 }
 
-export function getChanges(patch: string): Todo[] {
+export function getChanges (patch: string): Todo[] {
   const changes = []
   for (const line of patch.split('\n')) {
     if (!line.startsWith('+')) {
       continue
     }
     const [label, title] = line.substring(1).split(':')
-    const change = {label, title} as Todo
+    const change = { label, title } as Todo
     changes.push(change)
   }
 

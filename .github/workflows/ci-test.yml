@@ -10,10 +10,8 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
     uses: acti0nit/todolist/.github/workflows/test.yml@main
     with:
       token: ${{ secrets.PAT }}
   dist:
     uses: acti0nit/todolist/.github/workflows/dist.yml@main
-    
