@@ -1,0 +1,15 @@
+name: CD TODO
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  todo:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./
+      with:
+        token: ${{ secrets.PAT }}

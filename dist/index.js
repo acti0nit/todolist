@@ -51,7 +51,7 @@ function run() {
                 token: core.getInput('token'),
                 repository: core.getInput('repository'),
                 contentFilepath: core.getInput('content-filepath'),
-                dryRun: core.getInput('dry-run')
+                dryRun: Boolean(core.getInput('dry-run'))
             };
             core.debug(`Inputs: ${(0, util_1.inspect)(inputs)}`);
             const [owner, repo] = inputs.repository.split('/');

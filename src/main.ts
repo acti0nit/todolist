@@ -10,7 +10,7 @@ async function run(): Promise<void> {
       token: core.getInput('token'),
       repository: core.getInput('repository'),
       contentFilepath: core.getInput('content-filepath'),
-      dryRun: core.getInput('dry-run')
+      dryRun: Boolean(core.getInput('dry-run'))
     }
     core.debug(`Inputs: ${inspect(inputs)}`)
 
