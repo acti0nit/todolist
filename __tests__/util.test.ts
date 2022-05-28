@@ -1,5 +1,5 @@
-import {expect, test} from '@jest/globals'
-import {getChanges, getContent} from '../src/util'
+import { expect, test } from '@jest/globals'
+import { getChanges, getContent } from '../src/util'
 
 test('should not create element for empty line', async () => {
   const content = 'test\n'

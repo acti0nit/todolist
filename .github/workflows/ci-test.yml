@@ -11,8 +11,7 @@ on:
 jobs:
   tests:
     uses: acti0nit/todolist/.github/workflows/test.yml@main
-    secrets:
+    with:
       token: ${{ secrets.PAT }}
   dist:
     uses: acti0nit/todolist/.github/workflows/dist.yml@main
-    
