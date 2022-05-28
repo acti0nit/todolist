@@ -1,10 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import * as fs from 'fs'
-import * as util from 'util'
 import {inspect} from 'util'
 
-import {getContent} from './util'
+import {getChanges, getShas, Todo} from './util'
 
 async function run(): Promise<void> {
   try {
@@ -17,7 +15,8 @@ async function run(): Promise<void> {
     core.debug(`Inputs: ${inspect(inputs)}`)
 
     const [owner, repo] = inputs.repository.split('/')
-    core.debug(`Repo: ${inspect(repo)}`)
+    core.debug(`owner: ${inspect(owner)}`)
+    core.debug(`repo: ${inspect(repo)}`)
 
     if (inputs.token.length === 0 && inputs.dryRun) {
       core.info('empty token')
@@ -25,80 +24,70 @@ async function run(): Promise<void> {
     }
 
     const octokit = github.getOctokit(inputs.token)
-    const issues: number[] = []
 
-    // check file exists
-    if (await util.promisify(fs.exists)(inputs.contentFilepath)) {
-      // fetch file
-      const fileContent = await fs.promises.readFile(inputs.contentFilepath, {
-        encoding: 'utf8'
-      })
+    // get sha for changes
+    const {base, head} = getShas()
+    core.debug(`base: ${base}`)
+    core.debug(`head: ${head}`)
+    // get changes
+    const response = await octokit.rest.repos.compareCommits({
+      base,
+      head,
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo
+    })
 
-      for (const issueRaw of getContent(fileContent)) {
-        // get title and label
-        const [label, title] = issueRaw.split(/:/)
-
-        const issueNumber = await (async (): Promise<number> => {
-          // TODO:feat:update existing issue
-          // if (inputs.issueNumber) {
-          //   await octokit.rest.issues.update({
-          //     owner: owner,
-          //     repo: repo,
-          //     issue_number: inputs.issueNumber,
-          //     title: inputs.title,
-          //     body: fileContent
-          //   })
-          //   core.info(`Updated issue #${inputs.issueNumber}`)
-
-          //   return inputs.issueNumber
-          // }
-          // create issue
-          if (inputs.dryRun) {
-            core.info(
-              `Creating issue:\n  - owner:\t${owner}\n  - repo:\t${repo}\n  - title:\t${title}`
-            )
-            return 42
-          }
-
-          const {data: issue} = await octokit.rest.issues.create({
-            owner,
-            repo,
-            title,
-            body: ':rocket:'
-          })
-          core.info(`Created issue #${issue.number}`)
-
-          return issue.number
-        })()
-
-        core.info(`Applying label '${label}'`)
-        if (!inputs.dryRun) {
-          await octokit.rest.issues.addLabels({
-            owner,
-            repo,
-            issue_number: issueNumber,
-            labels: [label]
-          })
-        }
-        issues.push(issueNumber)
-      }
-
-      // TODO: apply assignees
-      // if (inputs.assignees.length > 0) {
-      //   core.info(`Applying assignees '${inputs.assignees}'`)
-      //   await octokit.rest.issues.addAssignees({
-      //     owner: owner,
-      //     repo: repo,
-      //     issue_number: issueNumber,
-      //     assignees: inputs.assignees
-      //   })
-      // }
-
-      // set output
-      core.setOutput('issues', issues.join(','))
-    } else {
-      new Error(`File not found at path '${inputs.contentFilepath}'`)
+    // Ensure that the request was successful.
+    if (response.status !== 200) {
+      core.setFailed(
+        `The GitHub API for comparing the base and head commits for this ${github.context.eventName} event returned ${response.status}, expected 200. ` +
+          "Please submit an issue on this action's GitHub repo."
+      )
     }
+
+    // Ensure that the head commit is ahead of the base commit.
+    if (response.data.status !== 'ahead') {
+      core.setFailed(
+        `The head commit for this ${github.context.eventName} event is not ahead of the base commit. ` +
+          "Please submit an issue on this action's GitHub repo."
+      )
+    }
+
+    // check if new lines added to relevant file
+    const files = response.data.files?.entries() || []
+
+    core.debug(`files: ${files}`)
+    let todolist: Todo[] = []
+    for (const file of files) {
+      const f = file[1]
+      core.debug(`file: ${JSON.stringify(f, null, 2)}`)
+      if (f.filename !== inputs.contentFilepath) {
+        core.debug(`wrong filename: ${f.filename}`)
+        continue
+      }
+      const changes = getChanges(f.patch || '')
+      core.debug(`changes: ${JSON.stringify(changes, null, 2)}`)
+      todolist = todolist.concat(changes)
+    }
+    core.debug(`todolist: ${JSON.stringify(todolist, null, 2)}`)
+
+    // create issues for relevant changes
+    for (const change of todolist) {
+      const {label, title} = change
+      if (inputs.dryRun) {
+        core.debug(`creating issue:`)
+        core.debug(`label: ${label}`)
+        core.debug(`title: ${title}`)
+        continue
+      }
+      octokit.rest.issues.create({
+        owner,
+        repo,
+        title,
+        labels: [label]
+      })
+    }
+    // label issues
   } catch (error: Error | unknown) {
     if (error instanceof Error) {
       core.debug(inspect(error))
